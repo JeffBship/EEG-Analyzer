@@ -9,9 +9,41 @@ import javafx.scene.chart.XYChart;
 import javafx.stage.Stage;
  
  
-public class Draw extends Application {
+public abstract class Draw extends Application {
+    
+    //private static XYChart.Series series = new XYChart.Series();
+    //public static LineChart<Number,Number> lineChart; 
+               // = new LineChart<Number,Number>(xAxis,yAxis);
+    
+    private static Channel channel;
+    private static String label="";
+    //private static Stage stage = new Stage();
+    
+    public static void setChannel(Channel channel){
+        Draw.channel = channel;
+    }
+     
+    public static void setLabel(String label){
+        Draw.label = label;
+    }
  
-    @Override public void start(Stage stage) {
+    //public static void test(String string){
+    //    lineChart.setTitle(string);
+    //}
+   
+    
+    //create stage
+
+    /**
+     *
+     * @param stage
+     */
+    public void start(Stage stage) {
+        
+        //Stage stage = new Stage();
+        
+        System.out.println("DDDDDDDDDDDDDDDDDDDDDDDDDDDDD");
+        
         stage.setTitle("EEG frequency analysis");
         //defining the axes
         final NumberAxis xAxis = new NumberAxis(0,200,10);
@@ -19,25 +51,24 @@ public class Draw extends Application {
         final NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("Relative Occurences");
         //creating the chart
-        final LineChart<Number,Number> lineChart = 
-                new LineChart<Number,Number>(xAxis,yAxis);
-        lineChart.setTitle("EEG channel frequency spectrograph");
+        LineChart<Number,Number> lineChart = new LineChart<Number,Number>(xAxis,yAxis);
+        lineChart = new LineChart<Number,Number>(xAxis,yAxis);
+        lineChart.setTitle(channel.getFilename() + " : " + label);
         //hide the Y axis...the values are non-units
         lineChart.getYAxis().setTickLabelsVisible(false);
         lineChart.getYAxis().setOpacity(0);
         //defining a series
         XYChart.Series series = new XYChart.Series();
-        //series.setName("My portfolio");
+        series.setName("channel: " + channel.getName());
         //populating the series with data
-        Iterator iterator = FFT.graphDataIterator();
+        Iterator iterator = channel.binIterator();
         Double[] bin;
         while (iterator.hasNext()){
             bin = (Double[]) iterator.next();
             series.getData().add(new XYChart.Data(bin[0], bin[1]));
         }
         Scene scene  = new Scene(lineChart,800,600);
-        
-        //Can't get the stylesheet to load, always null pointer whatever folder it's in
+       
         scene.getStylesheets().add(getClass().getResource("chart.css").toExternalForm());
         
         lineChart.getData().add(series);
@@ -45,6 +76,7 @@ public class Draw extends Application {
         //scene.getStylesheets().add(getClass().getResource
         //    ("C:\\Users\\Jeff\\Desktop\\EEG\\EEG_analyzer\\style\\chart.css").toExternalForm());
         stage.show();
+        System.out.println("last line of Draw start");
     }
  
     public static void main(String[] args) {

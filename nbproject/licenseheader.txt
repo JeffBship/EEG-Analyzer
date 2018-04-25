@@ -1,0 +1,7 @@
+<#if licenseFirst??>
+${licenseFirst}
+</#if>
+${licensePrefix}  INSERT LICENSE INFO HERE.  MIT OR GNU?
+<#if licenseLast??>
+${licenseLast}
+</#if>

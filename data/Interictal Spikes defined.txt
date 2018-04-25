@@ -1,0 +1,13 @@
+How Can We Identify Ictal and Interictal Abnormal Activity?
+Robert S. Fisher, Helen E. Scharfman, Marco deCurtis
+Adv Exp Med Biol. Author manuscript; available in PMC 2015 Mar 27.
+Published in final edited form as: Adv Exp Med Biol. 2014; 813: 3–23. doi: 10.1007/978-94-017-8914-1_1
+PMCID: PMC4375749
+https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4375749/#R43
+
+
+The term epileptiform is used to connote EEG patterns believed to be associated with a relatively high risk for having seizures. Gloor [43] defined spikes as potentials that stand above the background, have a “pointy” shape, duration between 30 and 70–80 ms, asymmetric rise and fall, and followed by a slow wave. The potential should have a sensible field, meaning that it should be reflected in physically adjacent electrodes and perhaps in synaptically linked regions such as the contralateral hemisphere. “Sharp waves” have durations of 70–200 ms. The distinction between spikes and sharp waves is arbitrary in the clinical arena and is discussed further below (see also [28]).
+
+43. Gloor P. Contributions of electroencephalography and electrocorticography to the neurosurgical treatment of the epilepsies. In: Purpura DP, Penry JK, Walter RD, editors. Advances in neurology. Raven; New York: 1975. pp. 59–105. [PubMed]
+
+28. de Curtis M, Avanzini G. Interictal spikes in focal epileptogenesis. Prog Neurobiol. 2001;63:541–567. [PubMed]

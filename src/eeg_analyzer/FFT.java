@@ -1,21 +1,43 @@
+/**
+ *   INSERT LICENSE INFO HERE.  MIT OR GNU?
+ * 
+ * This project makes use of various sources.
+ * 
+ * XChart charting library components are open source and attributed 
+ * to various contributors listed here:  https://github.com/knowm/XChart/tree/master
+ * 
+ * The FFT algorithm is modified from code provided at
+ * https://introcs.cs.princeton.edu/java/97data/FFT.java.html
+ * by Robert Sedgewick and Kevin Wayne, based upon the work of 
+ * J.W. Cooley and John Tukey.
+ * 
+ */
+
 package eeg_analyzer;
 
-//FFT.java
+
+
 
 import static java.lang.Math.exp;
 import static java.lang.Math.sqrt;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Scanner;
 
 
 
 public class FFT {
     
+    /*
     private static ArrayList<Double[]> graphData;
+    private static String graphName;
     
     public static Iterator graphDataIterator(){
         return graphData.iterator();
     }
+    */
     
     // compute the FFT of x[], assuming its length is a power of 2
     public static ArrayList<Double> fftRealList ( ArrayList<Double> signal ){
@@ -225,20 +247,24 @@ public class FFT {
         //bin[1] is the amplitude of that frequency 
         for(int b=0; b<bins; b++){
             binFreq = b * nyquist / bins;
+            
             //System.out.println("Adding bin freq " + bin[0]);
             //Note that the maximum this reaches is half the sampleRate
             //so the frequency is capped at the Nyquist cutoff with no further
             //converstions required.
             binAmplitude =   sqrt( fft.get(b)*fft.get(b) + fft.get(b+bins)*fft.get(b+bins) );
+            //remove dc line
+            if (binFreq<1.0) binAmplitude=0.0;
             bin = new Double[]{binFreq,binAmplitude};
             result.add(bin);
             //System.out.println("Just added " + result.get(b)[0] +":"+result.get(b)[1]);
         }
+        
         return result;
     }
     
     //main class for testing purposes
-    public static void main(String[] args){
+    public static void main(String[] args) throws InterruptedException{
         
         /*
         ArrayList<Double> randomNoise = new ArrayList<>();
@@ -280,39 +306,87 @@ public class FFT {
         
         */
         
-        String fileName = "data/00005943s002.txt";
-        Channel channel=null;
-        channel = Channel.fromFile(fileName);
+        String filename = "00004087_s003_t004.txt";
+        Record record = new Record(filename);
+        Channel channel = record.getChannel(0);
+        sampleRate = channel.getSampleRate();
+        Scanner scan = new Scanner(System.in);
         
-        //pick out one second
-        ArrayList<Double> oneSecond = new ArrayList<>();
-        int start = 0;
-        for (int count=0; count<sampleRate; count++){
-            oneSecond.add( channel.getElement(start+count) );
+        Boolean finished = false;
+        int window = 1;  //This is the time in seconds for each graph
+        int samples = channel.count();
+        int windowSamples = (int)sampleRate * window;
+        
+        /*
+        for (int c=0;c<samples;c++){
+            System.out.println(c +":"+channel.getElement(c));
         }
-        //displayList(oneSecond);
-        //displayList(channel.getData());
+        */
         
-        long startTime = System.currentTimeMillis();
+        //for testing, starts at this window.  First window is zero.
+        int startWindow = 0;
         
-        //ArrayList<Double> resultReal = fftRealList(oneSecond);
-        ArrayList<Double> resultReal = fftRealList(channel.getData());
+        int start = startWindow * windowSamples;
+        int finish = start + windowSamples;
+        ArrayList<Double> resultReal = null;
+        ArrayList<Double[]> bins = null;
+          
+        //display graphs in window size slices.  End is truncated to lower
+        //whole window size.
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setRoundingMode(RoundingMode.HALF_UP);
+        int spikeCount = 0;
         
-        long endTime = System.currentTimeMillis();
-        long elapsedTime = endTime - startTime;
-        System.out.println("elapsedTime: " + elapsedTime + " msec");
+        LineChartSample.main(new String[0]);
         
-        ArrayList<Double[]> bins = getBins(resultReal,sampleRate);
-        //displayBins(bins);
-        
-        graphData = bins;
-        Draw.main( args=new String[0] );
-        
+        while (!finished) {
+            
+                       
+            System.out.println();
+            System.out.println("Start: " + start + " Finish: " + finish);
+            System.out.println("AveRms:" + df.format(channel.getAveRms(start, finish)));
+            System.out.println("Min:" + df.format(channel.getMin(start, finish)));
+            System.out.println("ShiftedAverage:" + df.format(channel.getShiftedAve(start, finish)));
+            System.out.println("Max::" + df.format(channel.getMax(start, finish)));
+            System.out.println("hasSpike: " + channel.hasSpikeAmp(start,finish) );
+            System.out.println("aveAmplitude: " + df.format(channel.aveAmplitude(start,finish)));
+                     
+            if (channel.hasSpikeAmp(start,finish)) spikeCount++;
+            
+            //pick out one window
+            ArrayList<Double> oneWindow = new ArrayList<>();
+            for (int count=0; count<windowSamples; count++){
+                oneWindow.add( channel.getElement(start+count) );
+            }
+            
+            long startTime = System.currentTimeMillis();
+            //try {
+                resultReal = fftRealList(oneWindow);
+                 bins= getBins(resultReal,sampleRate);
+            //} catch (Exception e) {
+            //    System.out.println(e);
+            //}
+            //this takes the entire channel at once.  Activate if needed.
+            //ArrayList<Double> resultReal = fftRealList(channel.getData()); 
+            long endTime = System.currentTimeMillis();
+            long elapsedTime = endTime - startTime;
+            //System.out.println("elapsedTime: " + elapsedTime + " msec");
+            
+            channel.setBins(bins);
+            start = start + windowSamples;
+            finish = finish + windowSamples;
+       
+             
+            Draw.main(new String[0]);
+            
+            //continue until window is past the samples available
+            if (finish>samples) finished = true;
+        }  //while (!finished)
+        System.out.println("Total windows with spike: " + spikeCount);
         
         
         
         
     }
-    
 }
 
