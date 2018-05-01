@@ -20,8 +20,7 @@ public class Record {
     private String filename;
     private ArrayList<Channel> channelList = new ArrayList<>();
     private Double sampleRate, digMax, digMin, physMin, physMax;
-    //"sampleRate": 400, "digMax": 32767.0, "digMin": -32767.0, 
-    //"physMin": -29483.1, "physMax": 29483.12}}
+    
     
     
     
