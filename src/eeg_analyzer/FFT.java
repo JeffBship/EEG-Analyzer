@@ -362,10 +362,10 @@ public class FFT {
                 }
                 
                 //activate to show all channels
-                dataset.addSeries(series);   
+                //dataset.addSeries(series);   
                 
                 //activate to show one channel by name
-                //if (chan.getName().contains("EEG FP2-REF")) dataset.addSeries(series);  //
+                if (chan.getName().contains("EEG FP2-REF")) dataset.addSeries(series);  //
                 
                 
                 //check for spike while iterating

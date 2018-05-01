@@ -293,6 +293,7 @@ public class Channel {
      * from the average.  Looks within the start-finish section of the
      * channel.
      * The time duration must be less than Globals.SPIKE_MAX_DURATION. (msec)
+     * and more than Globals.SPIKE_MIN_DURATION (msec)
      * @param start
      * @param finish
      * @return boolean
@@ -333,11 +334,7 @@ public class Channel {
                 System.out.println("Spike at: " + firstTop/this.sampleRate + " duration:"+duration);
             }
         }
-        
-        
         return result;
-        
-        
     }
     
     /**
