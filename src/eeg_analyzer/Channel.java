@@ -298,46 +298,42 @@ public class Channel {
      * @return boolean
      */
     public boolean hasSpikeAmp(int start, int finish){
-        double average = this.getShiftedAve(start,finish);
-        double amplitude = this.aveAmplitude(start,finish);
-        Double highLimit = average + Globals.SPIKE_DIF * amplitude;
-        Double lowLimit = average - Globals.SPIKE_DIF * amplitude;
+        double aveAmplitude = this.aveAmplitude(start,finish);
         boolean result = false;
-        int spikeStart = -1;  //-1.0 are flags indicating no spike
-        int spikeFinish = -1;
-        int lastMinMax = 0;
-        int currentMinMax = 0;
+        
+        double top=0.0;
+        double bottom=0.0;
+        int firstTop = -1;
+        int topi = -1;
+        int lastBottom = -1;
+        
         for (int i=start; i<=finish; i++){
             //check for min/max
-            if (isLocalMax(i)||isLocalMin(i)){
-                lastMinMax = currentMinMax;
-                currentMinMax = i;
-                //is it a spike level
-                if (this.getElement(i)>highLimit || this.getElement(i)<lowLimit ){
-                    //if first spike level, set start time
-                    if (spikeStart==-1) spikeStart=i;
-                } else {
-                    //not spike level, if spikeStart is set, set spikeFinish one before this
-                    spikeFinish = i;
-                }   
+            if ( this.isLocalMax(i) ) {
+                top = this.getElement(i);
+                topi = i;
             }
+            if (isLocalMin(i)){
+                bottom = this.getElement(i);
+            }
+            if (top-bottom > aveAmplitude * Globals.SPIKE_DIF){
+                result = true;
+                //System.out.print("Spike at " + topi/this.sampleRate);
+                if (firstTop==-1) firstTop = topi;
+                lastBottom = i;
+            }  
         }
         //calculate spike duration
-        if (spikeStart != -1) {
-            //spike may extend past the window
-            if (spikeFinish == -1) spikeFinish = finish;
-            //convert to msec
-            int spikeSamples = spikeFinish - spikeStart;
-            double spikeDuration = spikeSamples * 1/this.sampleRate /1000;
-            
-            //spike recognized if within global settings
-            if (spikeDuration < Globals.SPIKE_MAX_DURATION
-                && spikeDuration > Globals.SPIKE_MIN_DURATION){
-                System.out.print("Spike start time:"+spikeStart*1/this.sampleRate);
-                System.out.print(" duration " + (int)spikeDuration*1000 + "msec  ");
-                result = true;
+        if (result){
+            double duration = (lastBottom-firstTop)/this.sampleRate*1000;
+            if (duration<Globals.SPIKE_MIN_DURATION || duration>Globals.SPIKE_MAX_DURATION){
+                //duration rule fail
+                result=false;
+            }else{
+                System.out.println("Spike at: " + firstTop/this.sampleRate + " duration:"+duration);
             }
         }
+        
         
         return result;
         
@@ -420,22 +416,20 @@ public class Channel {
         if (finish>this.count()) finish = this.count();
         if (start>finish) return null;  
         
-        Double maxSum=0.0;
-        int maxCount=0;
-        Double minSum=0.0;
-        int minCount=0;
+        double top=0.0;
+        double bottom=0.0;
+        double total=0.0;
+        int cycles=0;
         for(int i=start; i<=finish; i++){
             if (isLocalMax(i)){
-                maxSum += this.getElement(i);
-                maxCount++;
+                top = this.getElement(i);
+                cycles++;
             }else if (isLocalMin(i)){
-                minSum += this.getElement(i);
-                minCount++;
+                bottom = this.getElement(i);
+                total += top-bottom;
             }
         //System.out.println("maxcount:" + maxCount + " minCount:" + minCount);
-        double highAve = maxSum/maxCount;    
-        double lowAve = minSum/minCount;
-        result = highAve-lowAve;
+        result = total/cycles;
         
         }
         return result;

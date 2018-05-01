@@ -10,16 +10,19 @@ package eeg_analyzer;
  */
 public class Globals {
     
+    //RULE: AMPLITUDE OF SPIKE
     //Sets difference between average and any given sample
     //to designate a spike, expressed as a percentage of the average.
     //i.e. 200.0 would be twice the average.
-    public static final Double SPIKE_DIF = 100.0;
+    public static final Double SPIKE_DIF = 50.0;
     
+    //RULE: MAX DURATION OF SPIKE
     //Time in millisec longer than which a high amplitude is not a spike
-    public static final Double SPIKE_MAX_DURATION = 1000.0;
+    public static final Double SPIKE_MAX_DURATION = 200.0;
     
+    //RULE: MIN DURATION OF SPIKE
     //Time in millisec shorter than which a high amplitude is not a spike
-    public static final Double SPIKE_MIN_DURATION = 0.0;
+    public static final Double SPIKE_MIN_DURATION = 30.0;
     
     
     
