@@ -24,7 +24,7 @@ public class Channel {
     private String name;
     private String filename;
     private ArrayList<Double> data;  //raw amplitude data, time domain
-    private ArrayList<Double[]> bins;   //signal compnent data, frequency domain [frequency,percent]
+    private ArrayList<Double[]> bins;   //frequency domain [frequency,percent]
     private Double max, min;
     private Integer count;
     private Double sampleRate, digMax, digMin, physMin, physMax;
@@ -292,6 +292,7 @@ public class Channel {
      * Checks for any amplitude more than Globals.SPIKE_DIF percentage
      * from the average.  Looks within the start-finish section of the
      * channel.
+     * The time duration must be less than Globals.SPIKE_MAX_DURATION. (msec)
      * @param start
      * @param finish
      * @return boolean
@@ -302,11 +303,45 @@ public class Channel {
         Double highLimit = average + Globals.SPIKE_DIF * amplitude;
         Double lowLimit = average - Globals.SPIKE_DIF * amplitude;
         boolean result = false;
+        int spikeStart = -1;  //-1.0 are flags indicating no spike
+        int spikeFinish = -1;
+        int lastMinMax = 0;
+        int currentMinMax = 0;
         for (int i=start; i<=finish; i++){
-            if (this.getElement(i)>highLimit || this.getElement(i)<lowLimit )
-                result = true;
+            //check for min/max
+            if (isLocalMax(i)||isLocalMin(i)){
+                lastMinMax = currentMinMax;
+                currentMinMax = i;
+                //is it a spike level
+                if (this.getElement(i)>highLimit || this.getElement(i)<lowLimit ){
+                    //if first spike level, set start time
+                    if (spikeStart==-1) spikeStart=i;
+                } else {
+                    //not spike level, if spikeStart is set, set spikeFinish one before this
+                    spikeFinish = i;
+                }   
+            }
         }
+        //calculate spike duration
+        if (spikeStart != -1) {
+            //spike may extend past the window
+            if (spikeFinish == -1) spikeFinish = finish;
+            //convert to msec
+            int spikeSamples = spikeFinish - spikeStart;
+            double spikeDuration = spikeSamples * 1/this.sampleRate /1000;
+            
+            //spike recognized if within global settings
+            if (spikeDuration < Globals.SPIKE_MAX_DURATION
+                && spikeDuration > Globals.SPIKE_MIN_DURATION){
+                System.out.print("Spike start time:"+spikeStart*1/this.sampleRate);
+                System.out.print(" duration " + (int)spikeDuration*1000 + "msec  ");
+                result = true;
+            }
+        }
+        
         return result;
+        
+        
     }
     
     /**

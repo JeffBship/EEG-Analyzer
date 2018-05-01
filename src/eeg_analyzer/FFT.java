@@ -23,8 +23,11 @@ import static java.lang.Math.sqrt;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Scanner;
+import javax.swing.JFrame;
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 
 
@@ -308,8 +311,10 @@ public class FFT {
         
         String filename = "00004087_s003_t004.txt";
         Record record = new Record(filename);
+        sampleRate = record.getSampleRate();
+        
         Channel channel = record.getChannel(0);
-        sampleRate = channel.getSampleRate();
+        
         Scanner scan = new Scanner(System.in);
         
         Boolean finished = false;
@@ -336,12 +341,43 @@ public class FFT {
         DecimalFormat df = new DecimalFormat("#.##");
         df.setRoundingMode(RoundingMode.HALF_UP);
         int spikeCount = 0;
-        
-        LineChartSample.main(new String[0]);
+        boolean windowSpike = false;        
+        //LineChartSample.main(new String[0]);
         
         while (!finished) {
+            windowSpike = false;        
+            //new dataset for this window
+            XYSeriesCollection dataset = new XYSeriesCollection();
             
-                       
+            
+            //add data from each channel
+            for (int c=0;c<record.getSize();c++){
+                Channel chan = record.getChannel(c);
+                XYSeries series = new XYSeries(chan.getName());
+                for (int sample=start;sample<=finish;sample++){
+                    double time = sample / chan.getSampleRate();
+                    double amplitude = chan.getElement(sample);
+                    series.add(time,amplitude);
+                    //System.out.println("Added " + time + ":" + amplitude);
+                }
+                
+                //activate to show all channels
+                //dataset.addSeries(series);   
+                
+                //activate to show one channel by name
+                if (chan.getName().contains("EEG C3-REF")) dataset.addSeries(series);  //
+                
+                
+                //check for spike while iterating
+                if (chan.hasSpikeAmp(start,finish)) {
+                    windowSpike = true;
+                    spikeCount++;
+                    System.out.println("SPIKE FOUND: channel:"+chan.getName()
+                        +"  window:"+ start/chan.getSampleRate());
+                }
+            }
+              
+            /*
             System.out.println();
             System.out.println("Start: " + start + " Finish: " + finish);
             System.out.println("AveRms:" + df.format(channel.getAveRms(start, finish)));
@@ -350,8 +386,10 @@ public class FFT {
             System.out.println("Max::" + df.format(channel.getMax(start, finish)));
             System.out.println("hasSpike: " + channel.hasSpikeAmp(start,finish) );
             System.out.println("aveAmplitude: " + df.format(channel.aveAmplitude(start,finish)));
-                     
-            if (channel.hasSpikeAmp(start,finish)) spikeCount++;
+            */
+            
+                   
+            //if (channel.hasSpikeAmp(start,finish)) spikeCount++;
             
             //pick out one window
             ArrayList<Double> oneWindow = new ArrayList<>();
@@ -371,13 +409,33 @@ public class FFT {
             long endTime = System.currentTimeMillis();
             long elapsedTime = endTime - startTime;
             //System.out.println("elapsedTime: " + elapsedTime + " msec");
-            
             channel.setBins(bins);
+             
+            /*
+            if (channel.hasSpikeAmp(start,finish)){
+                String title = "Amplitude spike detected"; 
+                String xLabel = "Time (seconds)";
+                String yLabel = "Amplitude (units?)";
+                Chart chart = new Chart(channel,start,finish,title,xLabel,yLabel);
+                chart.setVisible(true);
+                Thread.sleep(1000);
+            }
+            */
+            
+            String title = "Amplitude spike detected"; 
+            String xLabel = "Time (seconds)";
+            String yLabel = "Amplitude (units?)";
+            
+            Chart chart = new Chart(dataset,start,finish,title,xLabel,yLabel,windowSpike);
+            chart.setVisible(true);
+            Thread.sleep(1000);
+            //chart.setVisible(false);
+            
+            
+            
+            
             start = start + windowSamples;
             finish = finish + windowSamples;
-       
-             
-            Draw.main(new String[0]);
             
             //continue until window is past the samples available
             if (finish>samples) finished = true;

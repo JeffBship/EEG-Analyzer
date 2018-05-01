@@ -38,7 +38,7 @@ public abstract class Draw extends Application {
      *
      * @param stage
      */
-    public void start(Stage stage) {
+    public void chart(Stage stage) {
         
         //Stage stage = new Stage();
         

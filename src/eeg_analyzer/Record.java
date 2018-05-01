@@ -16,10 +16,10 @@ import java.util.ArrayList;
  */
 public class Record {
     
-    String name;
-    String filename;
-    ArrayList<Channel> channelList = new ArrayList<>();
-    Double sampleRate, digMax, digMin, physMin, physMax;
+    private String name;
+    private String filename;
+    private ArrayList<Channel> channelList = new ArrayList<>();
+    private Double sampleRate, digMax, digMin, physMin, physMax;
     //"sampleRate": 400, "digMax": 32767.0, "digMin": -32767.0, 
     //"physMin": -29483.1, "physMax": 29483.12}}
     
@@ -28,7 +28,6 @@ public class Record {
     /**
      * Constructor that builds a record from a file.
      * @param filename
-     * @return Channel
      */
     public Record (String filename){
         Channel newChannel = null;
@@ -170,6 +169,18 @@ public class Record {
             result = this.channelList.get(channelNum);
         }
         return result;
+    }
+    
+    /**
+     * Returns the size of the record.  
+     * @return number of channels in the record
+     */
+    public int getSize(){
+        return this.channelList.size();
+    }
+    
+    public Double getSampleRate(){
+        return this.sampleRate;
     }
     
     
