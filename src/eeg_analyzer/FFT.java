@@ -266,6 +266,9 @@ public class FFT {
         return result;
     }
     
+    
+    
+    
     //main class for testing purposes
     public static void main(String[] args) throws InterruptedException{
         
@@ -425,14 +428,11 @@ public class FFT {
             String title = "Amplitude spike detected"; 
             String xLabel = "Time (seconds)";
             String yLabel = "Amplitude (units?)";
-            
-            Chart chart = new Chart(dataset,start,finish,title,xLabel,yLabel,windowSpike);
+            String side = "left";
+            Chart chart = new Chart(dataset,start,finish,title,xLabel,yLabel,windowSpike,side);
             chart.setVisible(true);
             Thread.sleep(1000);
             //chart.setVisible(false);
-            
-            
-            
             
             start = start + windowSamples;
             finish = finish + windowSamples;

@@ -32,10 +32,11 @@ public class Chart extends JFrame {
     
     
     //this constructor shows a dataset from start to finish
-    public Chart(XYDataset dataset, int start, int finish,
-           String chartTitle, String xAxisLabel,String yAxisLabel,boolean windowSpike) {
+    public Chart(XYDataset dataset, int start, int finish,String chartTitle, String xAxisLabel,
+           String yAxisLabel, boolean alarm, String side) {
         super("EEG Analysis");
-        JPanel chartPanel = createChartPanel(dataset,start,finish,windowSpike);
+        JPanel chartPanel = createChartPanel(dataset,start,finish,chartTitle,xAxisLabel,
+                                            yAxisLabel,alarm);
         
         add(chartPanel, BorderLayout.CENTER);
         
@@ -45,9 +46,15 @@ public class Chart extends JFrame {
         int xSize = (int) (width*Globals.CHART_SCALE/100);
         int ySize = (int) (height*Globals.CHART_SCALE/100);
         setSize(xSize, ySize);
+        if (side.equals("left")){
+            setLocation( (int) width/2-xSize, (int) height/2-ySize/2);
+        }else{
+            setLocation( (int) width/2, (int) height/2-ySize/2);
+        }
+        //setLocation(0,0);
         
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
+        //setLocationRelativeTo(null);
     }
     
     //this constructor shows a single channel from start to finish
@@ -67,16 +74,15 @@ public class Chart extends JFrame {
     }
  
     
-    private JPanel createChartPanel(XYDataset dataset, int start, int finish, boolean windowSpike) {
-        String chartTitle = "Amplitude in time domain";
-        String xAxisLabel = "time";
-        String yAxisLabel = "Amplitude";
+    private JPanel createChartPanel(XYDataset dataset, int start, int finish,
+        String chartTitle, String xAxisLabel, String yAxisLabel, boolean alarm) {
+        
         JFreeChart chart = ChartFactory.createXYLineChart(chartTitle,
                 xAxisLabel, yAxisLabel, dataset);
         //Font titleFont = new Font("SansSerif", Font.PLAIN, 10);
         //chart.getTitle().setFont(titleFont);
         XYPlot plot = chart.getXYPlot();
-        if (windowSpike){
+        if (alarm){
             plot.setOutlinePaint(Color.RED);
             plot.setOutlineStroke(new BasicStroke(4.0f));
         } else {

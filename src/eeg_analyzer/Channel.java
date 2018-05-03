@@ -451,6 +451,104 @@ public class Channel {
         return iterator;
     }
     
+    
+    /**
+     * Checks for a Theta wave in the entire channel.
+     * @return boolean
+     */
+    public boolean hasTheta(){
+        boolean result = false;
+        double freq;
+        double thetaContribution=0.0;
+        double totalContribution=0.0;
+        
+        for (int bin=0;bin<this.bins.size();bin++){
+            freq = this.bins.get(bin)[0];
+            if (freq>Globals.THETA_MIN && freq<Globals.THETA_MAX){
+                thetaContribution += this.bins.get(bin)[1];
+            }
+            if (freq<Globals.MAX_FREQ){
+                totalContribution += this.bins.get(bin)[1];
+            }  
+        }
+        double thetaPercent = thetaContribution / totalContribution * 100;
+        if (thetaPercent > Globals.THETA_CON) result = true;
+        return result;
+    }
+    
+    /**
+     * Checks for a Delta wave in the entire channel
+     * @return 
+     */
+    public boolean hasDelta(){
+        boolean result = false;
+        double freq;
+        double deltaContribution=0.0;
+        double totalContribution=0.0;
+        
+        for (int bin=0;bin<this.bins.size();bin++){
+            freq = this.bins.get(bin)[0];
+            if (freq>Globals.DELTA_MIN && freq<Globals.DELTA_MAX){
+                deltaContribution += this.bins.get(bin)[1];
+            }
+            if (freq<Globals.MAX_FREQ){
+                totalContribution += this.bins.get(bin)[1];
+            }  
+        }
+        double deltaPercent = deltaContribution / totalContribution * 100;
+        if (deltaPercent > Globals.DELTA_CON) result = true;
+        return result;
+    }
+    
+    /**
+     * Checks for a Theta wave in passed list of bins.
+     * @param bins
+     * @return boolean
+     */
+    public boolean hasTheta(ArrayList<Double[]> bins){
+        boolean result = false;
+        double freq;
+        double thetaContribution=0.0;
+        double totalContribution=0.0;
+        
+        for (int bin=0;bin<bins.size();bin++){
+            freq = bins.get(bin)[0];
+            if (freq>Globals.THETA_MIN && freq<Globals.THETA_MAX){
+                thetaContribution += bins.get(bin)[1];
+            }
+            if (freq<Globals.MAX_FREQ){
+                totalContribution += bins.get(bin)[1];
+            }  
+        }
+        double thetaPercent = thetaContribution / totalContribution * 100;
+        if (thetaPercent > Globals.THETA_CON) result = true;
+        return result;
+    }
+    
+    /**
+     * Checks for a Delta wave in the passed list of bins
+     * @param bins
+     * @return 
+     */
+    public boolean hasDelta(ArrayList<Double[]> bins){
+        boolean result = false;
+        double freq;
+        double deltaContribution=0.0;
+        double totalContribution=0.0;
+        
+        for (int bin=0;bin<bins.size();bin++){
+            freq = bins.get(bin)[0];
+            if (freq>Globals.DELTA_MIN && freq<Globals.DELTA_MAX){
+                deltaContribution += bins.get(bin)[1];
+            }
+            if (freq<Globals.MAX_FREQ){
+                totalContribution += bins.get(bin)[1];
+            }  
+        }
+        double deltaPercent = deltaContribution / totalContribution * 100;
+        if (deltaPercent > Globals.DELTA_CON) result = true;
+        return result;
+    }
    
     
     @Override

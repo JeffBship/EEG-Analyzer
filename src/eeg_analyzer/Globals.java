@@ -27,6 +27,26 @@ public class Globals {
     
     
     //Sets size of chart display, as percentage of total screen size.
-    public static final Double CHART_SCALE = 50.0;
+    public static final Double CHART_SCALE = 40.0;
+    
+    //Minimum frequency to display on spectrograph (filters DC component)
+    public static final Double MIN_FREQ = 1.0;
+    
+    //Maximum frequency to display on spectrograph (filters main line noise)
+    public static final Double MAX_FREQ = 50.0;
+    
+    //THETA wave band
+    public static final Double THETA_MIN = 3.5;
+    public static final Double THETA_MAX = 7.5;
+    //THETA minimum contribution to trigger hasTheta() in percent
+    public static final Double THETA_CON = 10.0;
+    
+    //DELTA wave band
+    public static final Double DELTA_MIN = 1.0;
+    public static final Double DELTA_MAX = 3.0;
+    //DELTA minimum contribution to trigger hasDelta() in percent
+    public static final Double DELTA_CON = 10.0;
+    
+    
     
 }
