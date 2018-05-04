@@ -123,7 +123,7 @@ public class Chart extends JFrame {
     return dataset;
 }
  
-    //main isn't needed, will delete in final refactoring
+    //main provided for stand alone testing during development
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override

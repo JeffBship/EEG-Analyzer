@@ -3,9 +3,8 @@
  * https://algs4.cs.princeton.edu/code/edu/princeton/cs/algs4/Complex.java
  * as licensed below
  */ 
-
-
-/******************************************************************************
+// <editor-fold defaultstate="collapsed" desc=" DESCRIPTION ">
+/** ****************************************************************************
  *  Copyright 2002-2016, Robert Sedgewick and Kevin Wayne.
  *
  *  This file is part of algs4.jar, which accompanies the textbook
@@ -27,9 +26,8 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with algs4.jar.  If not, see http://www.gnu.org/licenses.
- ******************************************************************************/
-
-
+ ***************************************************************************** */
+// </editor-fold>
 
 /******************************************************************************
  *  

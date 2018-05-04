@@ -3,8 +3,9 @@
  * 
  * This project makes use of various sources.
  * 
- * XChart charting library components are open source and attributed 
- * to various contributors listed here:  https://github.com/knowm/XChart/tree/master
+ * Jfreechart: http://www.jfree.org/jfreechart/
+ *  GNU Lesser General Public Licence 
+ * 
  * 
  * The FFT algorithm is modified from code provided at
  * https://introcs.cs.princeton.edu/java/97data/FFT.java.html

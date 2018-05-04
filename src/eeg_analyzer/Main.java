@@ -130,14 +130,19 @@ public class Main {
             
             //add data from each channel
             for (int c=0;c<record.getSize();c++){
+                oneWindow = new ArrayList<>();
                 Channel chan = record.getChannel(c);
                 XYSeries ampSeries = new XYSeries(chan.getName());
                 for (int sample=start;sample<=finish;sample++){
                     double time = sample / chan.getSampleRate();
                     double amplitude = chan.getElement(sample);
+                    oneWindow.add(amplitude);
                     ampSeries.add(time,amplitude);
                     //System.out.println("Added " + time + ":" + amplitude);
+                    
                 }
+                resultReal = fftRealList(oneWindow);
+                bins= getBins(resultReal,sampleRate);  
                 
                 XYSeries freqSeries = new XYSeries(chan.getName());
                 double freq = 0.0;
@@ -152,12 +157,12 @@ public class Main {
                 }
                 
                 //activate to show all channels
-                //datasetAmp.addSeries(ampSeries);   
-                //datasetFreq.addSeries(freqSeries);   
+                datasetAmp.addSeries(ampSeries);   
+                datasetFreq.addSeries(freqSeries);   
                 
                 //activate to show one channel by name
-                if (chan.getName().contains("EEG FP2-REF")) datasetAmp.addSeries(ampSeries);  //
-                if (chan.getName().contains("EEG FP2-REF")) datasetFreq.addSeries(freqSeries);
+                //if (chan.getName().contains("EEG FP2-REF")) datasetAmp.addSeries(ampSeries);  //
+                //if (chan.getName().contains("EEG FP2-REF")) datasetFreq.addSeries(freqSeries);
                 
                 //check for spike while iterating
                 if (chan.hasSpikeAmp(start,finish)) {
@@ -190,11 +195,6 @@ public class Main {
                         + " theta:" + theta
                         + " delta:" + delta);
                 }
-                
-                
-                
-                
-                
             }
               
             /*
@@ -238,7 +238,7 @@ public class Main {
             yLabel = "contribution";
             Chart freqChart = new Chart(datasetFreq,start,finish,title,xLabel,yLabel,alarm,"right");
             freqChart.setVisible(true);
-            Thread.sleep(300);
+            Thread.sleep(1000);
             //chart.setVisible(false);
             
             
